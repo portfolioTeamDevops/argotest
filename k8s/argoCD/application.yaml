@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: baruchi-pipelines-argo-cd
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/portfolioTeamDevops/argotest.git
+    targetRevision: main
+    path: k8s/helm/baruchi-helm-chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: baruchi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
