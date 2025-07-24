@@ -108,3 +108,30 @@ jobs:
       with:
         path: docker-version.txt
         name: docker-version
+  update-helm-and-push:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions-runner"
+          git config user.email "ci-actions-runner@github.com"
+
+      - name: Update Helm values and Chart
+        run: |
+          TAG=${{ env.IMAGE_TAG }}
+
+          # Update values.yaml
+          sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-chart/values.yaml
+
+          # Optionally update Chart.yaml appVersion
+          sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-chart/Chart.yaml
+
+          git add k8s/helm/baruchi-chart/values.yaml k8s/helm/baruchi-chart/Chart.yaml
+
+          # This commit skips future CI runs
+          git commit -m "CI: update Helm image tag to ${TAG} [skip ci]"
+          git push origin main
