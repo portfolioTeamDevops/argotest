@@ -125,12 +125,12 @@ jobs:
           TAG=${{ env.IMAGE_TAG }}
 
           # Update values.yaml
-          sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-chart/values.yaml
+          sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-helm-chart/values.yaml
 
           # Optionally update Chart.yaml appVersion
-          sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-chart/Chart.yaml
+          sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-helm-chart/Chart.yaml
 
-          git add k8s/helm/baruchi-chart/values.yaml k8s/helm/baruchi-chart/Chart.yaml
+          git add k8s/helm/baruchi-helm-chart/values.yaml k8s/helm/baruchi-helm-chart/Chart.yaml
 
           # This commit skips future CI runs
           git commit -m "CI: update Helm image tag to ${TAG} [skip ci]"
