@@ -98,7 +98,7 @@ jobs:
         context: . # repo path
         file: ./Dockerfile # repo file path
         push: true
-        tags: ${{ secrets.DOCKER_USER }}/${{ env.MAGE_NAME }}:${{ env.IMAGE_TAG }} # push the image to the repositoryI
+        tags: ${{ secrets.DOCKER_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} # push the image to the repositoryI
         
     - name: Save Docker version info to file
       run: echo "${{ env.IMAGE_TAG }}" > docker-version.txt
