@@ -122,16 +122,21 @@ jobs:
 
       - name: Update Helm values and Chart
         run: |
-          TAG=${{ env.IMAGE_TAG }}
+            echo "Updating Helm values and chart..."
 
-          # Update values.yaml
-          sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-helm-chart/values.yaml
+            TAG="${IMAGE_TAG}"
 
-          # Optionally update Chart.yaml appVersion
-          sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-helm-chart/Chart.yaml
+            echo "Using image tag: $TAG"
 
-          git add k8s/helm/baruchi-helm-chart/values.yaml k8s/helm/baruchi-helm-chart/Chart.yaml
+            sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-helm-chart/values.yaml
+            sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-helm-chart/Chart.yaml
 
-          # This commit skips future CI runs
-          git commit -m "CI: update Helm image tag to ${TAG} [skip ci]"
-          git push origin main
+            git config user.name "github-actions"
+            git config user.email "ci@github.com"
+
+            git add k8s/helm/baruchi-helm-chart/values.yaml k8s/helm/baruchi-helm-chart/Chart.yaml
+
+            git diff --cached
+
+            git commit -m "CI: update Helm image tag to ${TAG} [skip ci]" || echo "No changes to commit"
+            git push origin main
