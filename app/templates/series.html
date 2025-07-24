@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series {{ series_name }} Page</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Start streaming: {{ series_name }}</h1>
+    <h2>Shay is not working to complete this module</h2>
+
+    {% if image_url %}
+        <p>Here's a special image for this series:</p>
+        <img src="{{ image_url }}" alt="Image for {{ series_name }}">
+    {% else %}
+        <p>No specific image available for this series.</p>
+    {% endif %}
+
+    <button onclick="window.location.href='/start_streaming/{{ series_name }}'">Start Streaming</button>
+
+    <!-- 
+    <script>
+        fetch('http://orin-streaming:8080/api/data')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data fetched from API:', data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+    -->
+</body>
+</html>
