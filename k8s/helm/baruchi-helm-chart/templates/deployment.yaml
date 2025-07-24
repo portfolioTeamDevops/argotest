@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baruchi-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.service.appSelector }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.service.appSelector }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.appSelector }}
+    spec:
+      containers:
+        - name: baruchi-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 10
