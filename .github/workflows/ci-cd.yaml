@@ -117,26 +117,29 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name "github-actions-runner"
-          git config user.email "ci-actions-runner@github.com"
+          git config user.name "github-actions"
+          git config user.email "ci@github.com"
 
-      - name: Update Helm values and Chart
+      - name: Update Helm values and Chart with new image tag
         run: |
-            echo "Updating Helm values and chart..."
+          TAG="${IMAGE_TAG}"
 
-            TAG="${IMAGE_TAG}"
+          echo "Updating Helm chart with Docker tag: $TAG"
 
-            echo "Using image tag: $TAG"
+          # Update appVersion in Chart.yaml
+          sed -i -E "s/^appVersion:.*$/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-chart/Chart.yaml
 
-            sed -i "s/tag: \".*\"/tag: \"${TAG}\"/" k8s/helm/baruchi-helm-chart/values.yaml
-            sed -i "s/appVersion: \".*\"/appVersion: \"${TAG#v}\"/" k8s/helm/baruchi-helm-chart/Chart.yaml
+          # Update image tag in values.yaml (preserving indentation)
+          sed -i -E "s/^([[:space:]]*)tag:.*$/\1tag: \"${TAG}\"/" k8s/helm/baruchi-chart/values.yaml
 
-            git config user.name "github-actions"
-            git config user.email "ci@github.com"
+          echo "==== Chart.yaml ===="
+          cat k8s/helm/baruchi-chart/Chart.yaml
+          echo "==== values.yaml ===="
+          cat k8s/helm/baruchi-chart/values.yaml
 
-            git add k8s/helm/baruchi-helm-chart/values.yaml k8s/helm/baruchi-helm-chart/Chart.yaml
+      - name: Commit and push updated chart
+        run: |
+          git add k8s/helm/baruchi-chart/Chart.yaml k8s/helm/baruchi-chart/values.yaml
 
-            git diff --cached
-
-            git commit -m "CI: update Helm image tag to ${TAG} [skip ci]" || echo "No changes to commit"
-            git push origin main
+          git commit -m "CI: update Helm image tag to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
+          git push origin main
